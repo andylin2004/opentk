@@ -44,6 +44,31 @@ namespace OpenTK
             this.RefreshRate = refreshRate;
         }
 
+        internal DisplayResolution (int x, int y, int width, int height, int bitsPerPixel, float refreshRate, Vector2 scaleFactor)
+        {
+            // Refresh rate may be zero, since this information may not be available on some platforms.
+            if (width <= 0) {
+                throw new ArgumentOutOfRangeException ("width", "Must be greater than zero.");
+            }
+            if (height <= 0) {
+                throw new ArgumentOutOfRangeException ("height", "Must be greater than zero.");
+            }
+            if (bitsPerPixel <= 0) {
+                throw new ArgumentOutOfRangeException ("bitsPerPixel", "Must be greater than zero.");
+            }
+            if (refreshRate < 0) {
+                throw new ArgumentOutOfRangeException ("refreshRate", "Must be greater than, or equal to zero.");
+            }
+            if (scaleFactor.X <= 0 || scaleFactor.Y <= 0) {
+                throw new ArgumentOutOfRangeException ("scaleFactor", "Must be greater than zero.");
+            }
+
+            this.bounds = new Rectangle (x, y, width, height);
+            this.BitsPerPixel = bitsPerPixel;
+            this.RefreshRate = refreshRate;
+            this.ScaleFactor = scaleFactor;
+        }
+
 #if false
 
         /// <summary>
@@ -105,6 +130,10 @@ namespace OpenTK
         /// </summary>
         public float RefreshRate { get; internal set; }
 
+        ///<summary>Gets a Vector2 representing the horizontal and vertical scaling of this display.</summary>
+        public Vector2 ScaleFactor { get; internal set; }
+
+
         /// <summary>
         /// Returns a System.String representing this DisplayResolution.
         /// </summary>
@@ -112,7 +141,7 @@ namespace OpenTK
         public override string ToString()
         {
             #pragma warning disable 612,618
-            return String.Format("{0}x{1}@{2}Hz", Bounds, BitsPerPixel, RefreshRate);
+            return String.Format("{0}x{1}@{2}Hz@{3}x{4} scaling", Bounds, BitsPerPixel, RefreshRate, ScaleFactor.X, ScaleFactor.Y);
             #pragma warning restore 612,618
         }
 
@@ -132,7 +161,8 @@ namespace OpenTK
                     Width == res.Width &&
                     Height == res.Height &&
                     BitsPerPixel == res.BitsPerPixel &&
-                    RefreshRate == res.RefreshRate;
+                    RefreshRate == res.RefreshRate &&
+                    ScaleFactor == res.ScaleFactor;
             }
 
             return false;

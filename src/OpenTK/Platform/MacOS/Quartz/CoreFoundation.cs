@@ -119,6 +119,9 @@ namespace OpenTK.Platform.MacOS.Carbon
         [DllImport(appServices)]
         internal static extern void CFRelease(CFTypeRef cf);
 
+        [DllImport (appServices, EntryPoint = "CFDictionaryCreate")]
+        internal static extern IntPtr DictionaryCreate (IntPtr allocator, CFStringRef[] keys, CFStringRef[] objects, int numValues, IntPtr keyCallBacks, IntPtr objectCallBacks);
+
         // this mirrors the definition in CFString.h.
         // I don't know why, but __CFStringMakeConstantString is marked as "private and should not be used directly"
         // even though the CFSTR macro just calls it.

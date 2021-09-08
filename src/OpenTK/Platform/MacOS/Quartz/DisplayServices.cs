@@ -25,6 +25,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using OpenTK.Platform.MacOS.Carbon;
 
 namespace OpenTK.Platform.MacOS
 {
@@ -60,21 +61,21 @@ namespace OpenTK.Platform.MacOS
         // CGSize -> NSSize
         // CGRect -> NSRect
 
-        [DllImport(lib, EntryPoint="CGGetActiveDisplayList")]
-        internal unsafe static extern CGDisplayErr GetActiveDisplayList(int maxDisplays, IntPtr* activeDspys, out int dspyCnt);
+        [DllImport (lib, EntryPoint = "CGGetActiveDisplayList")]
+        internal unsafe static extern CGDisplayErr GetActiveDisplayList (int maxDisplays, IntPtr* activeDspys, out int dspyCnt);
 
-        [DllImport(lib, EntryPoint="CGMainDisplayID")]
-        internal static extern IntPtr MainDisplayID();
+        [DllImport (lib, EntryPoint = "CGMainDisplayID")]
+        internal static extern IntPtr MainDisplayID ();
 
         // Note: sizeof(HIRect) == 16, which is larger than 8 bytes.
         // The x86 and x64 Mac ABIs pass such structs as pointers in the
         // first parameter slot. This is normally handled automatically
         // by gcc/clang, but here we have to do it ourselves.
         // See "Listing 4" on https://developer.apple.com/library/mac/documentation/DeveloperTools/Conceptual/LowLevelABI/130-IA-32_Function_Calling_Conventions/IA32.html#//apple_ref/doc/uid/TP40002492-SW3
-        internal unsafe static NSRect DisplayBounds(IntPtr display)
+        internal unsafe static NSRect DisplayBounds (IntPtr display)
         {
             NSRect rect;
-            DisplayBounds(out rect, display);
+            DisplayBounds (out rect, display);
             return rect;
         }
 
@@ -102,6 +103,9 @@ namespace OpenTK.Platform.MacOS
         [DllImport(lib, EntryPoint="CGDisplayCopyDisplayMode")]
         internal static extern IntPtr CopyDisplayMode(IntPtr display);
 
+        [DllImport (lib, EntryPoint = "CGDisplayCopyAllDisplayModes")]
+        internal static extern IntPtr DisplayCopyAllDisplayModes (IntPtr display, IntPtr options);
+
         [DllImport(lib, EntryPoint="CGDisplayModeRelease")]
         internal static extern IntPtr ReleaseDisplayMode(IntPtr display);
 
@@ -116,6 +120,12 @@ namespace OpenTK.Platform.MacOS
 
         [DllImport(lib, EntryPoint="CGDisplayModeGetHeight")]
         internal static extern IntPtr GetModeHeight(IntPtr display);
+
+        [DllImport (lib, EntryPoint = "CGDisplayModeCopyPixelEncoding")]
+        internal static extern String DisplayModeCopyPixelEncoding (IntPtr display);
+
+        [DllImport (lib, EntryPoint = "CGDisplayModeGetRefreshRate")]
+        internal static extern Double DisplayModeGetRefreshRate (IntPtr display);
 
         [DllImport(lib, EntryPoint="CGDisplayRelease")]
         internal static extern CGDisplayErr DisplayRelease(IntPtr display);
