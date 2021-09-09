@@ -157,7 +157,7 @@ namespace OpenTK.Platform.Windows
                         opentk_dev_primary,
                         opentk_dev_available_res,
                         opentk_dev_current_res.Bounds,
-                        new Vector2(scaleFactor, scaleFactor),
+                        device_count,
                         dev1.DeviceName);
                     #pragma warning restore 612,618
 

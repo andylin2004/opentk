@@ -329,7 +329,7 @@ namespace OpenTK.Platform.Linux
 
             bool is_primary = AvailableDevices.Count == 0;
             DisplayDevice device = new DisplayDevice(current, is_primary,
-                modes, GetBounds(current), new Vector2(1.0f, 1.0f), display);
+                modes, GetBounds(current), AvailableDevices.Count, display);
 
             if (is_primary)
             {

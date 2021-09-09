@@ -136,7 +136,7 @@ namespace OpenTK.Platform.MacOS
                     Debug.Print("Display {0} bounds: {1}", i, newRect);
 
                     DisplayDevice opentk_dev = new DisplayDevice(opentk_dev_current_res,
-                        primary, opentk_dev_available_res, newRect, new Vector2(pixelScaleW, pixelScaleH), currentDisplay);
+                        primary, opentk_dev_available_res, newRect, i, currentDisplay);
 
                     AvailableDevices.Add(opentk_dev);
 
