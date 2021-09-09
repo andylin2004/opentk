@@ -205,5 +205,24 @@ namespace OpenTK.Platform.MacOS
 
             return false;
         }
+
+        public sealed override Vector2 GetDisplayScaling (DisplayIndex displayIndex)
+        {
+            DisplayDevice device = GetDisplay (displayIndex);
+            IntPtr currentDisplay = HandleTo (device);
+
+            //Copy the current display mode and take a pointer to it
+            IntPtr displayMode = CG.CopyDisplayMode (currentDisplay);
+            //Pull out the scaled width and height
+            int scaledWidth = (int)CG.GetModeWidth (displayMode);
+            int scaledHeight = (int)CG.GetModeHeight (displayMode);
+            //Pull out the raw width and height
+            int rawWidth = (int)CG.GetModePixelWidth (displayMode);
+            int rawHeight = (int)CG.GetModePixelHeight (displayMode);
+            //Remember to release the display mode
+            CG.ReleaseDisplayMode (displayMode);
+
+            return new Vector2 (rawHeight / scaledHeight, rawWidth / scaledWidth);
+        }
     }
 }

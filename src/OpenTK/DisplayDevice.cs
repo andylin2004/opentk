@@ -102,7 +102,7 @@ namespace OpenTK
         public int Height { get { return current_resolution.Height; } }
 
         /// <summary>Gets a System.Double that contains the pixel scale factor of this display.</summary>
-        public Vector2 ScaleFactor { get { return scaleFactor; } }
+        public Vector2 ScaleFactor { get { return implementation.GetDisplayScaling(DisplayDevice.Default); } }
 
         /// <summary>Gets a System.Int32 that contains number of bits per pixel of this display. Typical values include 8, 16, 24 and 32.</summary>
         public int BitsPerPixel

@@ -393,6 +393,11 @@ namespace OpenTK.Platform.X11
             return TryChangeResolution(device, null);
         }
 
+        public override Vector2 GetDisplayScaling (DisplayIndex displayIndex)
+        {
+            return new Vector2 (1, 1);
+        }
+
         private static class NativeMethods
         {
             private const string Xinerama = "libXinerama";

@@ -392,6 +392,11 @@ namespace OpenTK.Platform.Linux
                     &connector_id, 1, &mode) == 0;
             }
         }
+
+        public override Vector2 GetDisplayScaling (DisplayIndex displayIndex)
+        {
+            return new Vector2 (1, 1);
+        }
     }
 }
 

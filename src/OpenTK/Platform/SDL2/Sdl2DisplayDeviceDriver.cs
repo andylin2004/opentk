@@ -103,6 +103,17 @@ namespace OpenTK.Platform.SDL2
             Sdl2Factory.UseFullscreenDesktop = true;
             return true;
         }
+
+        public override Vector2 GetDisplayScaling (DisplayIndex displayIndex)
+        {
+            float pixelScaleD, pixelScaleW, pixelScaleH;
+            SDL.GetDisplayDPI ((int)displayIndex, out pixelScaleD, out pixelScaleW, out pixelScaleH);
+            pixelScaleD /= 96.0f;
+            pixelScaleW /= 96.0f;
+            pixelScaleH /= 96.0f;
+
+            return new Vector2 (pixelScaleW, pixelScaleH);
+        }
     }
 }
 

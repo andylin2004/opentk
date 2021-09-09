@@ -209,6 +209,23 @@ namespace OpenTK.Platform.Windows
             RefreshDisplayDevices();
         }
 
+        public override Vector2 GetDisplayScaling (DisplayIndex displayIndex)
+        {
+            float scaleFactor;
+            //Pull the DPI out of the registry
+            if (Environment.OSVersion.Version.Major == 10) {
+                //Win10
+                scaleFactor = (float)Registry.GetValue ("HKEY_CURRENT_USER\\Control Panel\\Desktop", "LogPixels", 96);
+            } else {
+                //Lower
+                scaleFactor = float.Parse ((string)Registry.GetValue (@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\ThemeManager", "LastLoadedDPI", "96"));
+            }
+            //Divide by default 96DPI to get scale factor
+            scaleFactor /= 96.0f;
+
+            return new Vector2 (scaleFactor, scaleFactor);
+        }
+
         ~WinDisplayDeviceDriver()
         {
             SystemEvents.DisplaySettingsChanged -=
