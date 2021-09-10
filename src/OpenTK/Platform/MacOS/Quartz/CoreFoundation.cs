@@ -118,7 +118,6 @@ namespace OpenTK.Platform.MacOS.Carbon
         static readonly IntPtr KeyCallbacks;
         static readonly IntPtr ValueCallbacks;
         private const string SystemLibrary = "/usr/lib/libSystem.dylib";
-        public const string CoreFoundationLibrary = "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation";
 
         static CFDictionary ()
         {
@@ -134,17 +133,23 @@ namespace OpenTK.Platform.MacOS.Carbon
             }
         }
 
-        public CFDictionary (IntPtr handle, bool own) : base (handle, own) { }
+        public CFDictionary (IntPtr handle, bool own) : base (handle, own) {
+            Ref = handle;
+        }
 
         public static IntPtr GetIndirect (IntPtr handle, string symbol)
         {
             return NS.dlsym (handle, symbol);
         }
 
-        //public CFDictionary (IntPtr reference)
-        //{
-        //    Ref = reference;
-        //}
+        public CFDictionary (IntPtr reference) : base (reference, true)
+        {
+            Ref = reference;
+        }
+
+        public CFDictionary () : base(IntPtr.Zero, true)
+        {
+        }
 
         public IntPtr Ref { get; set; }
 
