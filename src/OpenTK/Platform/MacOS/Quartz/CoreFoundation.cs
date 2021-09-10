@@ -26,6 +26,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using ObjCRuntimeInternal;
 
 namespace OpenTK.Platform.MacOS.Carbon
 {
@@ -65,12 +66,85 @@ namespace OpenTK.Platform.MacOS.Carbon
         }
     }
 
-    internal struct CFDictionary
+
+
+    internal class CFObject: IDisposable, INativeObject
     {
-        public CFDictionary(IntPtr reference)
+        public const string CoreFoundationLibrary = "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation";
+
+        public IntPtr Handle { get; private set; }
+
+        public CFObject (IntPtr handle, bool own)
         {
-            Ref = reference;
+            Handle = handle;
+
+            if (!own)
+                Retain ();
         }
+
+        protected virtual void Dispose (bool disposing)
+        {
+            if (Handle != IntPtr.Zero) {
+                Release ();
+                Handle = IntPtr.Zero;
+            }
+        }
+
+        public void Dispose ()
+        {
+            Dispose (true);
+            GC.SuppressFinalize (this);
+        }
+
+        void Retain ()
+        {
+            CFRetain (Handle);
+        }
+
+        [DllImport (CoreFoundationLibrary)]
+        internal extern static void CFRelease (IntPtr handle);
+
+        [DllImport (CoreFoundationLibrary)]
+        internal extern static void CFRetain (IntPtr handle);
+
+        void Release ()
+        {
+            CFRelease (Handle);
+        }
+    }
+
+    internal class CFDictionary: CFObject
+    {
+        static readonly IntPtr KeyCallbacks;
+        static readonly IntPtr ValueCallbacks;
+        private const string SystemLibrary = "/usr/lib/libSystem.dylib";
+        public const string CoreFoundationLibrary = "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation";
+
+        static CFDictionary ()
+        {
+            var handle = NS.dlopen (CoreFoundationLibrary, 0);
+            if (handle == IntPtr.Zero)
+                return;
+
+            try {
+                KeyCallbacks = GetIndirect (handle, "kCFTypeDictionaryKeyCallBacks");
+                ValueCallbacks = GetIndirect (handle, "kCFTypeDictionaryValueCallBacks");
+            } finally {
+                NS.dlclose (handle);
+            }
+        }
+
+        public CFDictionary (IntPtr handle, bool own) : base (handle, own) { }
+
+        public static IntPtr GetIndirect (IntPtr handle, string symbol)
+        {
+            return NS.dlsym (handle, symbol);
+        }
+
+        //public CFDictionary (IntPtr reference)
+        //{
+        //    Ref = reference;
+        //}
 
         public IntPtr Ref { get; set; }
 
@@ -92,11 +166,22 @@ namespace OpenTK.Platform.MacOS.Carbon
 
             return retval;
         }
+
+        public static CFDictionary FromKeysAndObjects (IntPtr[] obj, IntPtr[] key, int length)
+        {
+            return new CFDictionary (CF.DictionaryCreate (IntPtr.Zero, key, obj, obj.Length, KeyCallbacks, ValueCallbacks), true);
+        }
+
+        
     }
 
     internal class CF
     {
         private const string appServices = "/System/Library/Frameworks/ApplicationServices.framework/Versions/Current/ApplicationServices";
+        private const string CoreFoundationLibrary = "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation";
+
+        [DllImport (CoreFoundationLibrary, EntryPoint = "CFDictionaryCreate")]
+        extern static IntPtr DictionaryCreate (IntPtr allocator, IntPtr [] keys, IntPtr [] vals, IntPtr len, IntPtr keyCallbacks, IntPtr valCallbacks);
 
         [DllImport(appServices)]
         internal static extern int CFArrayGetCount(IntPtr theArray);
