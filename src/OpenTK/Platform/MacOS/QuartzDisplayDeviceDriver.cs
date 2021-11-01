@@ -116,7 +116,6 @@ namespace OpenTK.Platform.MacOS
 
                             CV.DisplayLinkRelease(displayLink);
                         }          
-                        DisplayResolution thisRes = new DisplayResolution(0, 0, width, height, bpp, (float)freq);
                         opentk_dev_available_res.Add(thisRes);
 
                         if (current)

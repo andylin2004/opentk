@@ -46,8 +46,43 @@ namespace OpenTK
             this.RefreshRate = refreshRate;
         }
 
-        // Creates a new DisplayResolution object for the primary DisplayDevice.
-        internal DisplayResolution(int x, int y, int width, int height, int bitsPerPixel, float refreshRate, Vector2 scaleFactor)
+        internal DisplayResolution (int x, int y, int width, int height, int bitsPerPixel, float refreshRate, Vector2 scaleFactor)
+        {
+            // Refresh rate may be zero, since this information may not be available on some platforms.
+            if (width <= 0) {
+                throw new ArgumentOutOfRangeException ("width", "Must be greater than zero.");
+            }
+            if (height <= 0) {
+                throw new ArgumentOutOfRangeException ("height", "Must be greater than zero.");
+            }
+            if (bitsPerPixel <= 0) {
+                throw new ArgumentOutOfRangeException ("bitsPerPixel", "Must be greater than zero.");
+            }
+            if (refreshRate < 0) {
+                throw new ArgumentOutOfRangeException ("refreshRate", "Must be greater than, or equal to zero.");
+            }
+            if (scaleFactor.X <= 0 || scaleFactor.Y <= 0) {
+                throw new ArgumentOutOfRangeException ("scaleFactor", "Must be greater than zero.");
+            }
+
+            this.bounds = new Rectangle (x, y, width, height);
+            this.BitsPerPixel = bitsPerPixel;
+            this.RefreshRate = refreshRate;
+            this.ScaleFactor = scaleFactor;
+        }
+
+#if false
+
+        /// <summary>
+        /// Creates a new DisplayResolution object for the specified DisplayDevice.
+        /// </summary>
+        /// <param name="width">The requested width in pixels.</param>
+        /// <param name="height">The requested height in pixels.</param>
+        /// <param name="bitsPerPixel">The requested bits per pixel in bits.</param>
+        /// <param name="refreshRate">The requested refresh rate in hertz.</param>
+        /// <remarks>OpenTK will select the closest match between all available resolutions on the specified DisplayDevice.</remarks>
+        ///
+        public DisplayResolution(int width, int height, int bitsPerPixel, float refreshRate, DisplayDevice device)
         {
             // Refresh rate may be zero, since this information may not be available on some platforms.
             if (width <= 0)
