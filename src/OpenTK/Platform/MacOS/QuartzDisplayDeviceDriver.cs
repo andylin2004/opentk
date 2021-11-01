@@ -30,7 +30,6 @@ using System.Diagnostics;
 using System.Drawing;
 #endif
 using OpenTK.Platform.MacOS.Carbon;
-using CFStringRef = System.IntPtr;
 
 namespace OpenTK.Platform.MacOS
 {
@@ -76,32 +75,24 @@ namespace OpenTK.Platform.MacOS
                     int currentHeight = CG.DisplayPixelsHigh(currentDisplay);
                     Debug.Print("Display {0} is at  {1}x{2}", i, currentWidth, currentHeight);
 
-                    CFStringRef[] keys = new CFStringRef[1];
-                    keys[1] = CF.CFSTR("kCGDisplayShowDuplicateLowResolutionModes");
-                    CFStringRef [] objects = new CFStringRef [1];
-                    objects [1] = CF.CFSTR ("kCFBooleanTrue");
-                    
-                    IntPtr options = CF.DictionaryCreate (IntPtr.Zero, keys, objects, 1, IntPtr.Zero, IntPtr.Zero);
-                    IntPtr displayModesPtr = CG.DisplayCopyAllDisplayModes(currentDisplay, options);
+                    IntPtr displayModesPtr = CG.DisplayAvailableModes(currentDisplay);
                     CFArray displayModes = new CFArray(displayModesPtr);
                     Debug.Print("Supports {0} display modes.", displayModes.Count);
 
                     DisplayResolution opentk_dev_current_res = null;
                     List<DisplayResolution> opentk_dev_available_res = new List<DisplayResolution>();
-                    IntPtr currentModePtr = CG.CopyDisplayMode(currentDisplay);
-                    //CFDictionary currentMode = new CFDictionary(currentModePtr);
+                    IntPtr currentModePtr = CG.DisplayCurrentMode(currentDisplay);
+                    CFDictionary currentMode = new CFDictionary(currentModePtr);
 
                     for (int j = 0; j < displayModes.Count; j++)
                     {
-                        //CFDictionary dict = new CFDictionary(displayModes[j]);
+                        CFDictionary dict = new CFDictionary(displayModes[j]);
 
-                        int width = (int)CG.GetModePixelWidth (displayModes[j]);
-                        int height = (int)CG.GetModePixelHeight (displayModes [j]);
-                        int bpp = 8;
-                        double freq = CG.DisplayModeGetRefreshRate (displayModes [j]);
-                        bool current = currentModePtr == displayModes [j];
-                        int ScaledWidth = (int)CG.GetModeWidth (displayModes [j]);
-                        int ScaledHeight = (int)CG.GetModeHeight (displayModes [j]);
+                        int width = (int)dict.GetNumberValue("Width");
+                        int height = (int)dict.GetNumberValue("Height");
+                        int bpp = (int)dict.GetNumberValue("BitsPerPixel");
+                        double freq = dict.GetNumberValue("RefreshRate");
+                        bool current = currentMode.Ref == dict.Ref;
 
                         if (freq <= 0)
                         {
@@ -115,7 +106,9 @@ namespace OpenTK.Platform.MacOS
                             }
 
                             CV.DisplayLinkRelease(displayLink);
-                        }          
+                        }
+                        
+                        DisplayResolution thisRes = new DisplayResolution(0, 0, width, height, bpp, (float)freq);
                         opentk_dev_available_res.Add(thisRes);
 
                         if (current)
