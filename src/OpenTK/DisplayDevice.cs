@@ -42,7 +42,7 @@ namespace OpenTK
 
         private bool primary;
         private Rectangle bounds;
-        private DisplayResolution current_resolution = new DisplayResolution();
+        internal DisplayResolution current_resolution = new DisplayResolution();
         private List<DisplayResolution> available_resolutions = new List<DisplayResolution>();
         private IList<DisplayResolution> available_resolutions_readonly;
 
@@ -51,30 +51,30 @@ namespace OpenTK
         private static readonly object display_lock = new object();
         private static DisplayDevice primary_display;
 
-        private static Platform.IDisplayDeviceDriver implementation;
+        private static readonly Platform.IDisplayDeviceDriver implementation;
         /// <summary>Stores the scale factor</summary>
-        private readonly Vector2 scaleFactor;
+        private readonly DisplayIndex displayIndex;
 
         static DisplayDevice()
         {
             implementation = Platform.Factory.Default.CreateDisplayDeviceDriver();
         }
 
-        internal DisplayDevice()
+        internal DisplayDevice(int index)
         {
             available_resolutions_readonly = available_resolutions.AsReadOnly();
+            displayIndex = (DisplayIndex)index;
         }
 
         internal DisplayDevice(DisplayResolution currentResolution, bool primary,
-            IEnumerable<DisplayResolution> availableResolutions, Rectangle bounds, Vector2 factor,
+            IEnumerable<DisplayResolution> availableResolutions, Rectangle bounds, int index,
             object id)
-            : this()
+            : this(index)
         {
             // Todo: Consolidate current resolution with bounds? Can they fall out of sync right now?
             this.current_resolution = currentResolution;
             IsPrimary = primary;
             this.available_resolutions.AddRange(availableResolutions);
-            this.scaleFactor = factor;
             #pragma warning disable 612,618
             this.bounds = bounds == Rectangle.Empty ? currentResolution.Bounds : bounds;
             #pragma warning restore 612,618
@@ -102,7 +102,7 @@ namespace OpenTK
         public int Height { get { return current_resolution.Height; } }
 
         /// <summary>Gets a System.Double that contains the pixel scale factor of this display.</summary>
-        public Vector2 ScaleFactor { get { return scaleFactor; } }
+        public Vector2 ScaleFactor { get { return implementation.GetDisplayScaling(displayIndex); } }
 
         /// <summary>Gets a System.Int32 that contains number of bits per pixel of this display. Typical values include 8, 16, 24 and 32.</summary>
         public int BitsPerPixel
