@@ -1024,26 +1024,33 @@ namespace OpenTK.Platform.MacOS
 
                 RestoreWindowState();
 
+                if (oldState == WindowState.Fullscreen) {
+                    Cocoa.SendVoid(windowInfo.Handle, Selector.Get("toggleFullScreen:"), windowInfo.Handle);
+                }
+
                 if (value == WindowState.Fullscreen)
                 {
-                    if (MacOSFactory.ExclusiveFullscreen)
-                    {
-                        normalLevel = Cocoa.SendInt(windowInfo.Handle, selLevel);
-                        var windowLevel = CG.ShieldingWindowLevel();
+                    //if (MacOSFactory.ExclusiveFullscreen)
+                    //{
+                    //    normalLevel = Cocoa.SendInt(windowInfo.Handle, selLevel);
+                    //    var windowLevel = CG.ShieldingWindowLevel();
 
-                        CG.CaptureAllDisplays();
-                        Cocoa.SendVoid(windowInfo.Handle, selSetLevel, windowLevel);
-                    }
+                    //    CG.CaptureAllDisplays();
+                    //    Cocoa.SendVoid(windowInfo.Handle, selSetLevel, windowLevel);
+                    //}
 
-                    previousBounds = InternalBounds;
-                    previousWindowBorder = WindowBorder;
+                    //previousBounds = InternalBounds;
+                    //previousWindowBorder = WindowBorder;
 
-                    SetMenuVisible(false);
-                    HideBorder();
-                    InternalBounds = GetCurrentScreenFrame();
+                    //SetMenuVisible(false);
+                    //HideBorder();
+                    //InternalBounds = GetCurrentScreenFrame();
 
+                    //windowState = value;
+                    //OnWindowStateChanged(EventArgs.Empty);
+                    Cocoa.SendVoid (windowInfo.Handle, Selector.Get ("setCollectionBehavior:"), (uint)128);
+                    Cocoa.SendVoid(windowInfo.Handle, Selector.Get("toggleFullScreen:"), windowInfo.Handle);
                     windowState = value;
-                    OnWindowStateChanged(EventArgs.Empty);
                 }
                 else if (value == WindowState.Maximized)
                 {
