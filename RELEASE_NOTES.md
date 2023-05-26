@@ -1,3 +1,6 @@
+### 3.3.3
+	* macOS native fullscreen used
+
 ### 3.3.2
 	* Added ability to include architecture  dependent dlls (x86 vs x64) on windows by placing the files in `x86` and `x64` folders respectively (@leezer3)
 	* Fix: Mouse position no longer resets when scrolling in Wayland (@jascrain)

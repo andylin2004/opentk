@@ -946,15 +946,6 @@ namespace OpenTK.Platform.MacOS
             suppressResize++;
             if (windowState == WindowState.Fullscreen)
             {
-                SetMenuVisible(true);
-                if (MacOSFactory.ExclusiveFullscreen)
-                {
-                    CG.DisplayReleaseAll();
-                    Cocoa.SendVoid(windowInfo.Handle, selSetLevel, normalLevel);
-                }
-
-                RestoreBorder();
-                InternalBounds = previousBounds;
             }
             else if (windowState == WindowState.Maximized)
             {
