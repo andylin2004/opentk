@@ -75,24 +75,38 @@ namespace OpenTK.Platform.MacOS
                     int currentHeight = CG.DisplayPixelsHigh(currentDisplay);
                     Debug.Print("Display {0} is at  {1}x{2}", i, currentWidth, currentHeight);
 
-                    IntPtr displayModesPtr = CG.DisplayAvailableModes(currentDisplay);
+                    IntPtr key = Cocoa.ToNSString ("kCGDisplayResolution");
+                    IntPtr obj = Cocoa.SendIntPtr (Class.Get("NSNumber"), Selector.Get ("numberWithBool:"), true);
+                    IntPtr dictionary = Cocoa.SendIntPtr (Class.NSDictionary, Selector.Alloc);
+                    dictionary = Cocoa.SendIntPtr (dictionary, Selector.Get ("initWithObjectsAndKeys:"), obj, key, IntPtr.Zero);
+
+                    //IntPtr displayModesPtr = CG.DisplayAvailableModes (currentDisplay);
+                    IntPtr displayModesPtr = CG.DisplayCopyAllDisplayModes (currentDisplay, dictionary);
                     CFArray displayModes = new CFArray(displayModesPtr);
                     Debug.Print("Supports {0} display modes.", displayModes.Count);
 
                     DisplayResolution opentk_dev_current_res = null;
                     List<DisplayResolution> opentk_dev_available_res = new List<DisplayResolution>();
-                    IntPtr currentModePtr = CG.DisplayCurrentMode(currentDisplay);
-                    CFDictionary currentMode = new CFDictionary(currentModePtr);
+                    //IntPtr currentModePtr = CG.DisplayCurrentMode(currentDisplay);
+                    //CFDictionary currentMode = new CFDictionary(currentModePtr);
+                    IntPtr currentMode = CG.CopyDisplayMode (currentDisplay);
 
                     for (int j = 0; j < displayModes.Count; j++)
                     {
-                        CFDictionary dict = new CFDictionary(displayModes[j]);
+                        //CFDictionary dict = new CFDictionary(displayModes[j]);
+                        IntPtr thisDisplayMode = displayModes [j];
 
-                        int width = (int)dict.GetNumberValue("Width");
-                        int height = (int)dict.GetNumberValue("Height");
-                        int bpp = (int)dict.GetNumberValue("BitsPerPixel");
-                        double freq = dict.GetNumberValue("RefreshRate");
-                        bool current = currentMode.Ref == dict.Ref;
+                        //int width = (int)dict.GetNumberValue("Width");
+                        //int height = (int)dict.GetNumberValue("Height");
+                        //int bpp = (int)dict.GetNumberValue("BitsPerPixel");
+                        //double freq = dict.GetNumberValue("RefreshRate");
+                        //bool current = currentMode.Ref == dict.Ref;
+
+                        int width = (int)CG.GetModeWidth (thisDisplayMode);
+                        int height = (int)CG.GetModeHeight (thisDisplayMode);
+                        int bpp = 8;
+                        double freq = (double)CG.DisplayModeGetRefreshRate (thisDisplayMode);
+                        bool current = currentMode == thisDisplayMode;
 
                         if (freq <= 0)
                         {
@@ -144,6 +158,8 @@ namespace OpenTK.Platform.MacOS
                     {
                         Primary = opentk_dev;
                     }
+
+                    Cocoa.SendVoid (dictionary, Selector.Release);
                 }
 
                 Debug.Unindent();
@@ -167,28 +183,43 @@ namespace OpenTK.Platform.MacOS
                 storedModes.Add(display, currentModePtr);
             }
 
-            IntPtr displayModesPtr = CG.DisplayAvailableModes(display);
+            IntPtr key = Cocoa.ToNSString ("kCGDisplayResolution");
+            IntPtr obj = Cocoa.SendIntPtr (Class.Get ("NSNumber"), Selector.Get ("numberWithBool:"), true);
+            IntPtr dictionary = Cocoa.SendIntPtr (Class.NSDictionary, Selector.Alloc);
+            dictionary = Cocoa.SendIntPtr (dictionary, Selector.Get ("initWithObjectsAndKeys:"), obj, key, IntPtr.Zero);
+
+            //IntPtr displayModesPtr = CG.DisplayAvailableModes (display);
+            IntPtr displayModesPtr = CG.DisplayCopyAllDisplayModes (display, dictionary);
             CFArray displayModes = new CFArray(displayModesPtr);
 
             for (int j = 0; j < displayModes.Count; j++)
             {
-                CFDictionary dict = new CFDictionary(displayModes[j]);
+                //CFDictionary dict = new CFDictionary(displayModes[j]);
+                IntPtr thisDisplayMode = displayModes [j];
 
-                int width = (int)dict.GetNumberValue("Width");
-                int height = (int)dict.GetNumberValue("Height");
-                int bpp = (int)dict.GetNumberValue("BitsPerPixel");
-                double freq = dict.GetNumberValue("RefreshRate");
+                //int width = (int)dict.GetNumberValue("Width");
+                //int height = (int)dict.GetNumberValue("Height");
+                //int bpp = (int)dict.GetNumberValue("BitsPerPixel");
+                //double freq = dict.GetNumberValue("RefreshRate");
+
+                int width = (int)CG.GetModeWidth (thisDisplayMode);
+                int height = (int)CG.GetModeHeight (thisDisplayMode);
+                int bpp = 8;
+                double freq = (double)CG.DisplayModeGetRefreshRate (thisDisplayMode);
 
                 if (width == resolution.Width && height == resolution.Height && bpp == resolution.BitsPerPixel && System.Math.Abs(freq - resolution.RefreshRate) < 1e-6)
                 {
                     Debug.Print("Changing resolution to {0}x{1}x{2}@{3}.", width, height, bpp, freq);
 
-                    CG.DisplaySwitchToMode(display, displayModes[j]);
+                    //CG.DisplaySwitchToMode(display, displayModes[j]);
+                    CG.DisplaySetDisplayMode (display, displayModes [j], IntPtr.Zero);
 
+                    Cocoa.SendVoid (dictionary, Selector.Release);
                     return true;
                 }
 
             }
+            Cocoa.SendVoid (dictionary, Selector.Release);
             return false;
         }
 
@@ -199,7 +230,8 @@ namespace OpenTK.Platform.MacOS
             if (storedModes.ContainsKey(display))
             {
                 Debug.Print("Restoring resolution.");
-                CG.DisplaySwitchToMode(display, storedModes[display]);
+                //CG.DisplaySwitchToMode(display, storedModes[display]);
+                CG.DisplaySetDisplayMode (display, storedModes [display], IntPtr.Zero);
                 return true;
             }
 

@@ -118,6 +118,9 @@ namespace OpenTK.Platform.MacOS
         [DllImport(lib, EntryPoint="CGDisplayModeGetHeight")]
         internal static extern IntPtr GetModeHeight(IntPtr display);
 
+        [DllImport (lib, EntryPoint = "CGDisplayModeGetRefreshRate")]
+        internal static extern IntPtr DisplayModeGetRefreshRate (IntPtr display);
+
         [DllImport(lib, EntryPoint="CGDisplayRelease")]
         internal static extern CGDisplayErr DisplayRelease(IntPtr display);
 
@@ -127,8 +130,14 @@ namespace OpenTK.Platform.MacOS
         [DllImport(lib, EntryPoint = "CGDisplayAvailableModes")]
         internal static extern IntPtr DisplayAvailableModes(IntPtr display);
 
+        [DllImport (lib, EntryPoint = "CGDisplayCopyAllDisplayModes")]
+        internal static extern IntPtr DisplayCopyAllDisplayModes (IntPtr display, IntPtr options);
+
         [DllImport(lib, EntryPoint = "CGDisplaySwitchToMode")]
         internal static extern IntPtr DisplaySwitchToMode(IntPtr display, IntPtr displayMode);
+
+        [DllImport (lib, EntryPoint = "CGDisplaySetDisplayMode")]
+        internal static extern IntPtr DisplaySetDisplayMode (IntPtr display, IntPtr displayMode, IntPtr options);
 
         [DllImport(lib, EntryPoint = "CGWarpMouseCursorPosition")]
         internal static extern CGError WarpMouseCursorPosition(NSPoint newCursorPosition);
