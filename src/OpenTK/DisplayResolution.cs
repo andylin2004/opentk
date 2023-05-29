@@ -18,7 +18,7 @@ namespace OpenTK
 
         internal DisplayResolution() { }
 
-        internal Vector2 ScaleFactor;
+        private Vector2 scaleFactor;
 
         // Creates a new DisplayResolution object for the primary DisplayDevice.
         internal DisplayResolution(int x, int y, int width, int height, int bitsPerPixel, float refreshRate)
@@ -44,6 +44,7 @@ namespace OpenTK
             this.bounds = new Rectangle(x, y, width, height);
             this.BitsPerPixel = bitsPerPixel;
             this.RefreshRate = refreshRate;
+            this.scaleFactor = new Vector2 (1, 1);
         }
 
         // Creates a new DisplayResolution object for the primary DisplayDevice.
@@ -70,7 +71,7 @@ namespace OpenTK
             this.bounds = new Rectangle(x, y, width, height);
             this.BitsPerPixel = bitsPerPixel;
             this.RefreshRate = refreshRate;
-            this.ScaleFactor = scaleFactor;
+            this.scaleFactor = scaleFactor;
         }
         
         /// <summary>
@@ -81,6 +82,11 @@ namespace OpenTK
         public Rectangle Bounds
         {
             get { return bounds; }
+        }
+
+        /// <summary>Gets a Vector2 of the scale factor of the width and height of the screen.</summary>
+        public Vector2 ScaleFactor {
+            get { return scaleFactor; }
         }
 
         /// <summary>Gets a System.Int32 that contains the width of this display in pixels.</summary>
@@ -95,6 +101,18 @@ namespace OpenTK
         {
             get { return bounds.Height; }
             internal set { bounds.Height = value; }
+        }
+
+        /// <summary>Gets a System.Int32 that contains the scale width of this display.</summary>
+        public float ScaleWidth {
+            get { return scaleFactor.X; }
+            internal set { scaleFactor.X = value; }
+        }
+
+        /// <summary>Gets a System.Int32 that contains the scale height of this display.</summary>
+        public float ScaleHeight {
+            get { return scaleFactor.Y; }
+            internal set { scaleFactor.Y = value; }
         }
 
         /// <summary>Gets a System.Int32 that contains number of bits per pixel of this display. Typical values include 8, 16, 24 and 32.</summary>
