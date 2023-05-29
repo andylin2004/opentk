@@ -215,8 +215,8 @@ namespace OpenTK
             }
             else
             {
-                throw new Graphics.GraphicsModeException(String.Format("Device {0}: Failed to change resolution to {1}.",
-                    this, resolution));
+                throw new Graphics.GraphicsModeException(String.Format("Device {0}: Failed to change resolution to {1}. ({2})",
+                    this, resolution, implementation.ToString()));
             }
         }
 

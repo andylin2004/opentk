@@ -211,6 +211,18 @@ namespace OpenTK.Platform.MacOS
                 float pixelScaleH = (float)pixelHeight / scaledHeight;
                 float pixelScaleW = (float)pixelWidth / scaledWidth;
 
+                if (freq <= 0) {
+                    IntPtr displayLink;
+                    CV.DisplayLinkCreateWithCGDisplay (display, out displayLink);
+
+                    CVTime t = CV.DisplayLinkGetNominalOutputVideoRefreshPeriod (displayLink);
+                    if ((t.flags & (Int32)CV.TimeFlags.TimeIsIndefinite) != (Int32)CV.TimeFlags.TimeIsIndefinite) {
+                        freq = (double)t.timeScale / t.timeValue;
+                    }
+
+                    CV.DisplayLinkRelease (displayLink);
+                }
+
                 if (scaledWidth == resolution.Width && scaledHeight == resolution.Height && bpp == resolution.BitsPerPixel && System.Math.Abs((float)freq - resolution.RefreshRate) < 1e-6 && pixelScaleH == resolution.ScaleHeight && pixelScaleW == resolution.ScaleWidth) {
                     Debug.Print("Changing resolution to {0}x{1}x{2}@{3}.", scaledWidth, scaledHeight, bpp, freq);
 
@@ -260,6 +272,23 @@ namespace OpenTK.Platform.MacOS
             CG.ReleaseDisplayMode (displayMode);
 
             return new Vector2 (rawHeight / scaledHeight, rawWidth / scaledWidth);
+        }
+
+        public override string ToString ()
+        {
+            String toReturn = "";
+            for (int j = 0; j < displayModes.Count; j++) {
+                IntPtr displayMode = displayModes [j];
+
+                int scaledWidth = (int)CG.GetModeWidth (displayMode);
+                int scaledHeight = (int)CG.GetModeHeight (displayMode);
+                //Pull out the raw width and height
+                int rawWidth = (int)CG.GetModePixelWidth (displayMode);
+                int rawHeight = (int)CG.GetModePixelHeight (displayMode);
+
+                toReturn += String.Format ("Scaled: {0}x{1} Raw: {2}x{3} Scaling: {4}x{5}", scaledWidth, scaledHeight, rawWidth, rawHeight, (float)rawWidth / scaledWidth, (float)rawHeight / scaledHeight);
+            }
+            return toReturn;
         }
     }
 }
