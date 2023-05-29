@@ -38,6 +38,8 @@ namespace OpenTK.Platform.MacOS
     {
         private static readonly object display_lock = new object();
 
+        private CFArray displayModes;
+
         public QuartzDisplayDeviceDriver()
         {
             lock (display_lock)
@@ -82,7 +84,7 @@ namespace OpenTK.Platform.MacOS
                     dictionary = Cocoa.SendIntPtr (dictionary, Selector.Get ("initWithObjectsAndKeys:"), obj, key, IntPtr.Zero);
 
                     IntPtr displayModesPtr = CG.DisplayCopyAllDisplayModes (currentDisplay, dictionary);
-                    CFArray displayModes = new CFArray(displayModesPtr);
+                    displayModes = new CFArray(displayModesPtr);
                     Debug.Print("Supports {0} display modes.", displayModes.Count);
 
                     DisplayResolution opentk_dev_current_res = null;
@@ -180,14 +182,14 @@ namespace OpenTK.Platform.MacOS
                 storedModes.Add(display, currentModePtr);
             }
 
-            IntPtr key = Cocoa.ToNSString ("kCGDisplayResolution");
-            IntPtr obj = Cocoa.SendIntPtr (Class.Get ("NSNumber"), Selector.Get ("numberWithBool:"), true);
-            IntPtr dictionary = Cocoa.SendIntPtr (Class.NSDictionary, Selector.Alloc);
-            dictionary = Cocoa.SendIntPtr (dictionary, Selector.Get ("initWithObjectsAndKeys:"), obj, key, IntPtr.Zero);
+            //IntPtr key = Cocoa.ToNSString ("kCGDisplayResolution");
+            //IntPtr obj = Cocoa.SendIntPtr (Class.Get ("NSNumber"), Selector.Get ("numberWithBool:"), true);
+            //IntPtr dictionary = Cocoa.SendIntPtr (Class.NSDictionary, Selector.Alloc);
+            //dictionary = Cocoa.SendIntPtr (dictionary, Selector.Get ("initWithObjectsAndKeys:"), obj, key, IntPtr.Zero);
 
             //IntPtr displayModesPtr = CG.DisplayAvailableModes (display);
-            IntPtr displayModesPtr = CG.DisplayCopyAllDisplayModes (display, dictionary);
-            CFArray displayModes = new CFArray(displayModesPtr);
+            //IntPtr displayModesPtr = CG.DisplayCopyAllDisplayModes (display, dictionary);
+            //CFArray displayModes = new CFArray(displayModesPtr);
 
             for (int j = 0; j < displayModes.Count; j++)
             {
@@ -215,14 +217,14 @@ namespace OpenTK.Platform.MacOS
                     //CG.DisplaySwitchToMode(display, displayModes[j]);
                     CG.DisplaySetDisplayMode (display, thisDisplayMode, IntPtr.Zero);
 
-                    Cocoa.SendVoid (dictionary, Selector.Release);
-                    CG.ReleaseDisplayMode (thisDisplayMode);
+                    //Cocoa.SendVoid (dictionary, Selector.Release);
+                    //CG.ReleaseDisplayMode (thisDisplayMode);
                     return true;
                 }
 
                 //CG.ReleaseDisplayMode (thisDisplayMode);
             }
-            Cocoa.SendVoid (dictionary, Selector.Release);
+            //Cocoa.SendVoid (dictionary, Selector.Release);
             return false;
         }
 
