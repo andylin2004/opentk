@@ -101,7 +101,7 @@ namespace OpenTK.Platform.MacOS
         internal static extern uint ShieldingWindowLevel();
 
         [DllImport(lib, EntryPoint="CGDisplayCopyDisplayMode")]
-        internal static extern IntPtr CopyDisplayMode(IntPtr display);
+        internal static extern IntPtr DisplayCopyDisplayMode(IntPtr display);
 
         [DllImport(lib, EntryPoint="CGDisplayModeRelease")]
         internal static extern IntPtr ReleaseDisplayMode(IntPtr display);
