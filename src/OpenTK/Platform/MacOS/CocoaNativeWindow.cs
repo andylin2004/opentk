@@ -164,6 +164,8 @@ namespace OpenTK.Platform.MacOS
             // still active.
             WindowKeyDownHandler = WindowKeyDown;
             WindowDidResizeHandler = WindowDidResize;
+            WindowDidEnterFullScreenHandler = WindowDidEnterFullScreen;
+            WindowDidExitFullScreenHandler = WindowDidExitFullScreen;
             WindowDidMoveHandler = WindowDidMove;
             WindowDidBecomeKeyHandler = WindowDidBecomeKey;
             WindowDidResignKeyHandler = WindowDidResignKey;
@@ -184,6 +186,7 @@ namespace OpenTK.Platform.MacOS
             windowClass = Class.AllocateClass("OpenTK_GameWindow" + unique_id, "NSWindow");
             Class.RegisterMethod(windowClass, WindowKeyDownHandler, "keyDown:", "v@:@");
             Class.RegisterMethod(windowClass, WindowDidResizeHandler, "windowDidResize:", "v@:@");
+            Class.RegisterMethod (windowClass, WindowDidEnterFullScreenHandler, "windowDidEnterFullScreen:", "v@:@");
             Class.RegisterMethod(windowClass, WindowDidMoveHandler, "windowDidMove:", "v@:@");
             Class.RegisterMethod(windowClass, WindowDidBecomeKeyHandler, "windowDidBecomeKey:", "v@:@");
             Class.RegisterMethod(windowClass, WindowDidResignKeyHandler, "windowDidResignKey:", "v@:@");
@@ -289,6 +292,10 @@ namespace OpenTK.Platform.MacOS
         private delegate void WindowKeyDownDelegate(IntPtr self, IntPtr cmd, IntPtr notification);
         [UnmanagedFunctionPointer(CallingConvention.Winapi)]
         private delegate void WindowDidResizeDelegate(IntPtr self, IntPtr cmd, IntPtr notification);
+        [UnmanagedFunctionPointer (CallingConvention.Winapi)]
+        private delegate void WindowDidEnterFullScreenDelegate (IntPtr self, IntPtr cmd, IntPtr notification);
+        [UnmanagedFunctionPointer (CallingConvention.Winapi)]
+        private delegate void WindowDidExitFullScreenDelegate (IntPtr self, IntPtr cmd, IntPtr notification);
         [UnmanagedFunctionPointer(CallingConvention.Winapi)]
         private delegate void WindowDidMoveDelegate(IntPtr self, IntPtr cmd, IntPtr notification);
         [UnmanagedFunctionPointer(CallingConvention.Winapi)]
@@ -320,6 +327,8 @@ namespace OpenTK.Platform.MacOS
 
         private WindowKeyDownDelegate WindowKeyDownHandler;
         private WindowDidResizeDelegate WindowDidResizeHandler;
+        private WindowDidEnterFullScreenDelegate WindowDidEnterFullScreenHandler;
+        private WindowDidExitFullScreenDelegate WindowDidExitFullScreenHandler;
         private WindowDidMoveDelegate WindowDidMoveHandler;
         private WindowDidBecomeKeyDelegate WindowDidBecomeKeyHandler;
         private WindowDidResignKeyDelegate WindowDidResignKeyHandler;
@@ -379,6 +388,16 @@ namespace OpenTK.Platform.MacOS
             {
                 Debug.Print(e.ToString());
             }
+        }
+
+        private void WindowDidEnterFullScreen(IntPtr self, IntPtr cmd, IntPtr notification)
+        {
+            windowState = WindowState.Fullscreen;
+        }
+
+        private void WindowDidExitFullScreen(IntPtr self, IntPtr cmd, IntPtr notification)
+        {
+            windowState = WindowState.Normal;
         }
 
         private void OnResize(bool resetTracking)
