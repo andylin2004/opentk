@@ -4,10 +4,25 @@ open Xunit
 open FsCheck
 open FsCheck.Xunit
 open System
-open System.Runtime.InteropServices
+open System.Diagnostics
+open System.IO
+open System.Threading
 open OpenTK
 
 module GameWindow =
+    let private isMacOS =
+        match Environment.OSVersion.Platform with
+        | PlatformID.MacOSX -> true
+        | PlatformID.Unix -> Directory.Exists("/System/Library/CoreServices")
+        | _ -> false
+
+    let private waitFor (predicate: unit -> bool) (timeoutMs: int) (pump: unit -> unit) =
+        let sw = Stopwatch.StartNew()
+        while sw.ElapsedMilliseconds < int64 timeoutMs && not (predicate()) do
+            pump()
+            Thread.Sleep(10)
+        predicate()
+
     module General =
         [<Fact>]
         let ``Can create and close GameWindow`` () =
@@ -41,6 +56,35 @@ module GameWindow =
             Assert.Equal([], signals)
             gw.ProcessEvents()
             Assert.Equal(["Closing"; "Closed"], signals)
+
+        [<Fact>]
+        let ``Fullscreen enter and exit raise WindowStateChanged`` () =
+            if not isMacOS then
+                ()
+            else
+                use gw = new OpenTK.GameWindow()
+                let states = System.Collections.Generic.List<WindowState>()
+                gw.WindowStateChanged.Add(fun _ -> states.Add(gw.WindowState))
+
+                gw.WindowState <- WindowState.Fullscreen
+                let entered =
+                    waitFor
+                        (fun () ->
+                            gw.WindowState = WindowState.Fullscreen &&
+                            states.Contains(WindowState.Fullscreen))
+                        5000
+                        (fun () -> gw.ProcessEvents())
+                Assert.True(entered, "Fullscreen enter did not trigger WindowStateChanged")
+
+                gw.WindowState <- WindowState.Normal
+                let exited =
+                    waitFor
+                        (fun () ->
+                            gw.WindowState = WindowState.Normal &&
+                            states.Contains(WindowState.Normal))
+                        5000
+                        (fun () -> gw.ProcessEvents())
+                Assert.True(exited, "Fullscreen exit did not trigger WindowStateChanged")
 
     module Constructors =
         [<Fact>]

@@ -106,6 +106,8 @@ namespace OpenTK.Platform.MacOS
         //static readonly IntPtr selIsInFullScreenMode = Selector.Get("isInFullScreenMode");
         //static readonly IntPtr selExitFullScreenModeWithOptions = Selector.Get("exitFullScreenModeWithOptions:");
         //static readonly IntPtr selEnterFullScreenModeWithOptions = Selector.Get("enterFullScreenMode:withOptions:");
+        private static readonly IntPtr selToggleFullScreen = Selector.Get("toggleFullScreen:");
+        private static readonly IntPtr selPerformSelectorOnMainThread = Selector.Get("performSelectorOnMainThread:withObject:waitUntilDone:");
         private static readonly IntPtr selArrowCursor = Selector.Get("arrowCursor");
 
         private static readonly IntPtr selAddCursorRect = Selector.Get("addCursorRect:cursor:");
@@ -164,6 +166,7 @@ namespace OpenTK.Platform.MacOS
             // still active.
             WindowKeyDownHandler = WindowKeyDown;
             WindowDidResizeHandler = WindowDidResize;
+            WindowWillEnterFullScreenHandler = WindowWillEnterFullScreen;
             WindowDidEnterFullScreenHandler = WindowDidEnterFullScreen;
             WindowDidExitFullScreenHandler = WindowDidExitFullScreen;
             WindowDidMoveHandler = WindowDidMove;
@@ -186,7 +189,9 @@ namespace OpenTK.Platform.MacOS
             windowClass = Class.AllocateClass("OpenTK_GameWindow" + unique_id, "NSWindow");
             Class.RegisterMethod(windowClass, WindowKeyDownHandler, "keyDown:", "v@:@");
             Class.RegisterMethod(windowClass, WindowDidResizeHandler, "windowDidResize:", "v@:@");
-            Class.RegisterMethod (windowClass, WindowDidEnterFullScreenHandler, "windowDidEnterFullScreen:", "v@:@");
+            Class.RegisterMethod(windowClass, WindowWillEnterFullScreenHandler, "windowWillEnterFullScreen:", "v@:@");
+            Class.RegisterMethod(windowClass, WindowDidEnterFullScreenHandler, "windowDidEnterFullScreen:", "v@:@");
+            Class.RegisterMethod(windowClass, WindowDidExitFullScreenHandler, "windowDidExitFullScreen:", "v@:@");
             Class.RegisterMethod(windowClass, WindowDidMoveHandler, "windowDidMove:", "v@:@");
             Class.RegisterMethod(windowClass, WindowDidBecomeKeyHandler, "windowDidBecomeKey:", "v@:@");
             Class.RegisterMethod(windowClass, WindowDidResignKeyHandler, "windowDidResignKey:", "v@:@");
@@ -292,10 +297,12 @@ namespace OpenTK.Platform.MacOS
         private delegate void WindowKeyDownDelegate(IntPtr self, IntPtr cmd, IntPtr notification);
         [UnmanagedFunctionPointer(CallingConvention.Winapi)]
         private delegate void WindowDidResizeDelegate(IntPtr self, IntPtr cmd, IntPtr notification);
-        [UnmanagedFunctionPointer (CallingConvention.Winapi)]
-        private delegate void WindowDidEnterFullScreenDelegate (IntPtr self, IntPtr cmd, IntPtr notification);
-        [UnmanagedFunctionPointer (CallingConvention.Winapi)]
-        private delegate void WindowDidExitFullScreenDelegate (IntPtr self, IntPtr cmd, IntPtr notification);
+        [UnmanagedFunctionPointer(CallingConvention.Winapi)]
+        private delegate void WindowWillEnterFullScreenDelegate(IntPtr self, IntPtr cmd, IntPtr notification);
+        [UnmanagedFunctionPointer(CallingConvention.Winapi)]
+        private delegate void WindowDidEnterFullScreenDelegate(IntPtr self, IntPtr cmd, IntPtr notification);
+        [UnmanagedFunctionPointer(CallingConvention.Winapi)]
+        private delegate void WindowDidExitFullScreenDelegate(IntPtr self, IntPtr cmd, IntPtr notification);
         [UnmanagedFunctionPointer(CallingConvention.Winapi)]
         private delegate void WindowDidMoveDelegate(IntPtr self, IntPtr cmd, IntPtr notification);
         [UnmanagedFunctionPointer(CallingConvention.Winapi)]
@@ -327,6 +334,7 @@ namespace OpenTK.Platform.MacOS
 
         private WindowKeyDownDelegate WindowKeyDownHandler;
         private WindowDidResizeDelegate WindowDidResizeHandler;
+        private WindowWillEnterFullScreenDelegate WindowWillEnterFullScreenHandler;
         private WindowDidEnterFullScreenDelegate WindowDidEnterFullScreenHandler;
         private WindowDidExitFullScreenDelegate WindowDidExitFullScreenHandler;
         private WindowDidMoveDelegate WindowDidMoveHandler;
@@ -359,7 +367,7 @@ namespace OpenTK.Platform.MacOS
         private bool PerformDragOperation(IntPtr self, IntPtr cmd, IntPtr sender)
         {
             IntPtr pboard = Cocoa.SendIntPtr(sender, Selector.Get("draggingPasteboard"));
-            
+
             IntPtr files = Cocoa.SendIntPtr(pboard, Selector.Get("propertyListForType:"), NSFilenamesPboardType);
 
             int count = Cocoa.SendInt(files, Selector.Get("count"));
@@ -369,7 +377,7 @@ namespace OpenTK.Platform.MacOS
                 IntPtr str = Cocoa.SendIntPtr(obj, Selector.Get("cStringUsingEncoding:"), new IntPtr(1));
                 OnFileDrop(Marshal.PtrToStringAuto(str));
             }
-            
+
             return true;
         }
 
@@ -390,14 +398,21 @@ namespace OpenTK.Platform.MacOS
             }
         }
 
+        private void WindowWillEnterFullScreen(IntPtr self, IntPtr cmd, IntPtr notification)
+        {
+            OnWindowWillEnterFullScreen(EventArgs.Empty);
+        }
+
         private void WindowDidEnterFullScreen(IntPtr self, IntPtr cmd, IntPtr notification)
         {
             windowState = WindowState.Fullscreen;
+            OnWindowStateChanged(EventArgs.Empty);
         }
 
         private void WindowDidExitFullScreen(IntPtr self, IntPtr cmd, IntPtr notification)
         {
             windowState = WindowState.Normal;
+            OnWindowStateChanged(EventArgs.Empty);
         }
 
         private void OnResize(bool resetTracking)
@@ -1018,6 +1033,17 @@ namespace OpenTK.Platform.MacOS
             previousWindowBorder = null;
         }
 
+        private void ToggleFullscreenOnMainThread()
+        {
+            if (NSApplication.IsUIThread)
+            {
+                Cocoa.SendVoid(windowInfo.Handle, selToggleFullScreen, windowInfo.Handle);
+                return;
+            }
+
+            Cocoa.SendVoid(windowInfo.Handle, selPerformSelectorOnMainThread, selToggleFullScreen, windowInfo.Handle, new IntPtr(1));
+        }
+
         public override WindowState WindowState
         {
             get
@@ -1034,8 +1060,9 @@ namespace OpenTK.Platform.MacOS
 
                 RestoreWindowState();
 
-                if (oldState == WindowState.Fullscreen) {
-                    Cocoa.SendVoid(windowInfo.Handle, Selector.Get("toggleFullScreen:"), windowInfo.Handle);
+                if (oldState == WindowState.Fullscreen)
+                {
+                    ToggleFullscreenOnMainThread();
                 }
 
                 if (value == WindowState.Fullscreen)
@@ -1058,8 +1085,8 @@ namespace OpenTK.Platform.MacOS
 
                     //windowState = value;
                     //OnWindowStateChanged(EventArgs.Empty);
-                    Cocoa.SendVoid (windowInfo.Handle, Selector.Get ("setCollectionBehavior:"), (uint)128);
-                    Cocoa.SendVoid(windowInfo.Handle, Selector.Get("toggleFullScreen:"), windowInfo.Handle);
+                    Cocoa.SendVoid(windowInfo.Handle, Selector.Get("setCollectionBehavior:"), (uint)128);
+                    ToggleFullscreenOnMainThread();
                     windowState = value;
                 }
                 else if (value == WindowState.Maximized)
@@ -1167,7 +1194,7 @@ namespace OpenTK.Platform.MacOS
             }
             set
             {
-                var r_scaled = Cocoa.SendRect(windowInfo.Handle, selConvertRectFromBacking, new RectangleF(PointF.Empty, new SizeF (value.Width, value.Height)));
+                var r_scaled = Cocoa.SendRect(windowInfo.Handle, selConvertRectFromBacking, new RectangleF(PointF.Empty, new SizeF(value.Width, value.Height)));
                 var r = Cocoa.SendRect(windowInfo.Handle, selFrameRectForContentRect, r_scaled);
                 Size = new Size((int)r.Width, (int)r.Height);
             }
@@ -1331,21 +1358,22 @@ namespace OpenTK.Platform.MacOS
                 {
                     // The mac os feature "Shake mouse pointer to locate" seems to still be visible when calling hide only once
                     // but calling it multiple times seems to resolve the issue
-                    CG.DisplayHideCursor (WindowInfo.Handle);
-                    CG.DisplayHideCursor (WindowInfo.Handle);
-                    CG.DisplayHideCursor (WindowInfo.Handle);
-                    CG.DisplayHideCursor (WindowInfo.Handle);
+                    CG.DisplayHideCursor(WindowInfo.Handle);
+                    CG.DisplayHideCursor(WindowInfo.Handle);
+                    CG.DisplayHideCursor(WindowInfo.Handle);
+                    CG.DisplayHideCursor(WindowInfo.Handle);
 
-                    CG.AssociateMouseAndMouseCursorPosition (false);
-                } else
+                    CG.AssociateMouseAndMouseCursorPosition(false);
+                }
+                else
                 {
-                    CG.DisplayShowCursor (WindowInfo.Handle);
-                    CG.DisplayShowCursor (WindowInfo.Handle);
-                    CG.DisplayShowCursor (WindowInfo.Handle);
-                    CG.DisplayShowCursor (WindowInfo.Handle);
-                   
+                    CG.DisplayShowCursor(WindowInfo.Handle);
+                    CG.DisplayShowCursor(WindowInfo.Handle);
+                    CG.DisplayShowCursor(WindowInfo.Handle);
+                    CG.DisplayShowCursor(WindowInfo.Handle);
 
-                    CG.AssociateMouseAndMouseCursorPosition (true);
+
+                    CG.AssociateMouseAndMouseCursorPosition(true);
                 }
             }
         }

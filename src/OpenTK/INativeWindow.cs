@@ -228,6 +228,11 @@ namespace OpenTK
         event EventHandler<EventArgs> WindowStateChanged;
 
         /// <summary>
+        /// Occurs when the window is about to enter fullscreen.
+        /// </summary>
+        event EventHandler<EventArgs> WindowWillEnterFullScreen;
+
+        /// <summary>
         /// Occurs whenever a keyboard key is pressed.
         /// </summary>
         event EventHandler<OpenTK.Input.KeyboardKeyEventArgs> KeyDown;

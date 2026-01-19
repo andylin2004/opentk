@@ -74,7 +74,8 @@ namespace OpenTK
         public NativeWindow(int width, int height, string title, GameWindowFlags options, GraphicsMode mode, DisplayDevice device)
             : this(device != null ? device.Bounds.Left + (device.Bounds.Width - width) / 2 : 0,
                    device != null ? device.Bounds.Top + (device.Bounds.Height - height) / 2 : 0,
-                   width, height, title, options, mode, device) { }
+                   width, height, title, options, mode, device)
+        { }
 
         /// <summary>Constructs a new NativeWindow with the specified attributes.</summary>
         /// <param name="x">Horizontal screen space coordinate of the NativeWindow's origin.</param>
@@ -585,6 +586,11 @@ namespace OpenTK
         public event EventHandler<EventArgs> WindowStateChanged = delegate { };
 
         /// <summary>
+        /// Occurs when the window is about to enter fullscreen.
+        /// </summary>
+        public event EventHandler<EventArgs> WindowWillEnterFullScreen = delegate { };
+
+        /// <summary>
         /// Occurs when a <see cref="MouseButton"/> is pressed.
         /// </summary>
         public event EventHandler<MouseButtonEventArgs> MouseDown = delegate { };
@@ -882,6 +888,15 @@ namespace OpenTK
         }
 
         /// <summary>
+        /// Called when the NativeWindow is about to enter fullscreen.
+        /// </summary>
+        /// <param name="e">Not used.</param>
+        protected virtual void OnWindowWillEnterFullScreen(EventArgs e)
+        {
+            WindowWillEnterFullScreen(this, e);
+        }
+
+        /// <summary>
         /// Processes operating system events until the NativeWindow becomes idle.
         /// </summary>
         /// <param name="retainEvents">If true, the state of underlying system event propagation will be preserved, otherwise event propagation will be enabled if it has not been already.</param>
@@ -942,6 +957,8 @@ namespace OpenTK
 
         private void OnWindowStateChangedInternal(object sender, EventArgs e) { OnWindowStateChanged(e); }
 
+        private void OnWindowWillEnterFullScreenInternal(object sender, EventArgs e) { OnWindowWillEnterFullScreen(e); }
+
         private bool Events
         {
             set
@@ -972,6 +989,7 @@ namespace OpenTK
                     implementation.VisibleChanged += OnVisibleChangedInternal;
                     implementation.WindowBorderChanged += OnWindowBorderChangedInternal;
                     implementation.WindowStateChanged += OnWindowStateChangedInternal;
+                    implementation.WindowWillEnterFullScreen += OnWindowWillEnterFullScreenInternal;
                     implementation.FileDrop += OnFileDropInternal;
                     events = true;
                 }
@@ -997,6 +1015,7 @@ namespace OpenTK
                     implementation.VisibleChanged -= OnVisibleChangedInternal;
                     implementation.WindowBorderChanged -= OnWindowBorderChangedInternal;
                     implementation.WindowStateChanged -= OnWindowStateChangedInternal;
+                    implementation.WindowWillEnterFullScreen -= OnWindowWillEnterFullScreenInternal;
                     implementation.FileDrop -= OnFileDropInternal;
                     events = false;
                 }

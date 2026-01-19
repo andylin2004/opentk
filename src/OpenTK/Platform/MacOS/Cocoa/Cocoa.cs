@@ -40,117 +40,120 @@ namespace OpenTK.Platform.MacOS
 
         internal const string LibObjC = "/usr/lib/libobjc.dylib";
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static IntPtr SendIntPtr(IntPtr receiver, IntPtr selector);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static IntPtr SendIntPtr(IntPtr receiver, IntPtr selector, ulong ulong1);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static IntPtr SendIntPtr(IntPtr receiver, IntPtr selector, NSSize size);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static IntPtr SendIntPtr(IntPtr receiver, IntPtr selector, IntPtr intPtr1);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static IntPtr SendIntPtr(IntPtr receiver, IntPtr selector, IntPtr intPtr1, int int1);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static IntPtr SendIntPtr(IntPtr receiver, IntPtr selector, IntPtr intPtr1, IntPtr intPtr2);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static IntPtr SendIntPtr(IntPtr receiver, IntPtr selector, IntPtr intPtr1, IntPtr intPtr2, IntPtr intPtr3);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static IntPtr SendIntPtr(IntPtr receiver, IntPtr selector, IntPtr intPtr1, IntPtr intPtr2, IntPtr intPtr3, IntPtr intPtr4, IntPtr intPtr5);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static IntPtr SendIntPtr(IntPtr receiver, IntPtr selector, IntPtr p1, NSPoint p2);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static IntPtr SendIntPtr(IntPtr receiver, IntPtr selector, bool p1);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static IntPtr SendIntPtr(IntPtr receiver, IntPtr selector, NSPoint p1);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static IntPtr SendIntPtr(IntPtr receiver, IntPtr selector, NSRect rectangle1);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static IntPtr SendIntPtr(IntPtr receiver, IntPtr selector, NSRect rectangle1, int int1, int int2, bool bool1);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static IntPtr SendIntPtr(IntPtr receiver, IntPtr selector, uint uint1, IntPtr intPtr1, IntPtr intPtr2, bool bool1);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static IntPtr SendIntPtr(IntPtr receiver, IntPtr selector, NSRect rectangle1, int int1, IntPtr intPtr1, IntPtr intPtr2);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static IntPtr SendIntPtr(IntPtr receiver, IntPtr selector, IntPtr p1, int p2, int p3, int p4, int p5, bool p6, bool p7, IntPtr p8, NSBitmapFormat p9, int p10, int p11);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static bool SendBool(IntPtr receiver, IntPtr selector);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static bool SendBool(IntPtr receiver, IntPtr selector, int int1);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static void SendVoid(IntPtr receiver, IntPtr selector);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static void SendVoid(IntPtr receiver, IntPtr selector, uint uint1);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static void SendVoid(IntPtr receiver, IntPtr selector, uint uint1, IntPtr intPtr1);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static void SendVoid(IntPtr receiver, IntPtr selector, IntPtr intPtr1);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static void SendVoid(IntPtr receiver, IntPtr selector, IntPtr intPtr1, int int1);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static void SendVoid(IntPtr receiver, IntPtr selector, IntPtr intPtr1, IntPtr intPtr2);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static void SendVoid(IntPtr receiver, IntPtr selector, int int1);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static void SendVoid(IntPtr receiver, IntPtr selector, bool bool1);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static void SendVoid(IntPtr receiver, IntPtr selector, NSPoint point1);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static void SendVoid(IntPtr receiver, IntPtr selector, NSRect rect1, bool bool1);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static void SendVoid(IntPtr receiver, IntPtr selector, NSRect rect1, IntPtr intPtr1);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
+        public extern static void SendVoid(IntPtr receiver, IntPtr selector, IntPtr intPtr1, IntPtr intPtr2, IntPtr intPtr3);
+
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static int SendInt(IntPtr receiver, IntPtr selector);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static uint SendUint(IntPtr receiver, IntPtr selector);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static ushort SendUshort(IntPtr receiver, IntPtr selector);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend_fpret")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend_fpret")]
         private extern static float SendFloat_i386(IntPtr receiver, IntPtr selector);
 
         // On x64 using selector that return CGFloat give you 64 bit == double
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         private extern static double SendFloat_x64(IntPtr receiver, IntPtr selector);
 
-        [DllImport(LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         private extern static float SendFloat_ios(IntPtr receiver, IntPtr selector);
 
         public static float SendFloat(IntPtr receiver, IntPtr selector)
         {
-            #if IOS
+#if IOS
             return SendFloat_ios(receiver, selector);
-            #else
+#else
             if (IntPtr.Size == 4)
             {
                 return SendFloat_i386(receiver, selector);
@@ -159,14 +162,14 @@ namespace OpenTK.Platform.MacOS
             {
                 return (float)SendFloat_x64(receiver, selector);
             }
-            #endif
+#endif
         }
 
         // Not the _stret version, perhaps because a NSPoint fits in one register?
         // thefiddler: gcc is indeed using objc_msgSend for NSPoint on i386
-        [DllImport (LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static NSPointF SendPointF(IntPtr receiver, IntPtr selector);
-        [DllImport (LibObjC, EntryPoint="objc_msgSend")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend")]
         public extern static NSPointD SendPointD(IntPtr receiver, IntPtr selector);
 
         public static NSPoint SendPoint(IntPtr receiver, IntPtr selector)
@@ -178,24 +181,24 @@ namespace OpenTK.Platform.MacOS
                 if (IntPtr.Size == 4)
                 {
                     NSPointF pf = SendPointF(receiver, selector);
-                    r.X.Value = *(IntPtr *)&pf.X;
-                    r.Y.Value = *(IntPtr *)&pf.Y;
+                    r.X.Value = *(IntPtr*)&pf.X;
+                    r.Y.Value = *(IntPtr*)&pf.Y;
                 }
                 else
                 {
                     NSPointD pd = SendPointD(receiver, selector);
-                    r.X.Value = *(IntPtr *)&pd.X;
-                    r.Y.Value = *(IntPtr *)&pd.Y;
+                    r.X.Value = *(IntPtr*)&pd.X;
+                    r.Y.Value = *(IntPtr*)&pd.Y;
                 }
             }
 
             return r;
         }
 
-        [DllImport (LibObjC, EntryPoint="objc_msgSend_stret")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend_stret")]
         private extern static void SendRect(out NSRect retval, IntPtr receiver, IntPtr selector);
 
-        [DllImport (LibObjC, EntryPoint="objc_msgSend_stret")]
+        [DllImport(LibObjC, EntryPoint = "objc_msgSend_stret")]
         private extern static void SendRect(out NSRect retval, IntPtr receiver, IntPtr selector, NSRect rect1);
 
         public static NSRect SendRect(IntPtr receiver, IntPtr selector)

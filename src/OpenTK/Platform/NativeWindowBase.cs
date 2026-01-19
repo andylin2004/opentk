@@ -118,6 +118,11 @@ namespace OpenTK.Platform
             WindowStateChanged(this, e);
         }
 
+        protected void OnWindowWillEnterFullScreen(EventArgs e)
+        {
+            WindowWillEnterFullScreen(this, e);
+        }
+
         protected void OnKeyDown(Key key, bool repeat)
         {
             KeyboardState.SetKeyState(key, true);
@@ -316,6 +321,7 @@ namespace OpenTK.Platform
         public event EventHandler<EventArgs> FocusedChanged = delegate { };
         public event EventHandler<EventArgs> WindowBorderChanged = delegate { };
         public event EventHandler<EventArgs> WindowStateChanged = delegate { };
+        public event EventHandler<EventArgs> WindowWillEnterFullScreen = delegate { };
         public event EventHandler<KeyboardKeyEventArgs> KeyDown = delegate { };
         public event EventHandler<KeyPressEventArgs> KeyPress = delegate { };
         public event EventHandler<KeyboardKeyEventArgs> KeyUp = delegate { };
